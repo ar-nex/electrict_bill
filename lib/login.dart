@@ -70,6 +70,7 @@ class _LoginState extends State<Login> {
           'mobile': _mobileController.text,
           'password': _passwordController.text
         }));
+    print(response.statusCode);
     if (response.statusCode == 200) {
       final respBody = json.decode(response.body);
       bool success = respBody['success'];
@@ -81,7 +82,8 @@ class _LoginState extends State<Login> {
         _prefs!.setBool('isLoggedIn', true);
         _prefs!.setString('usertype', respBody['usertype']);
         _prefs!.setString('name', respBody['name']);
-        _prefs!.setString('userId', respBody['id']);
+        _prefs!.setInt('userId', respBody['id']);
+        Navigator.pushReplacementNamed(context, 'home');
       } else {
         setToInvalid();
         showSnackBar(context, "Invalid username or password", false);

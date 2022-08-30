@@ -32,7 +32,7 @@ class _HomeState extends State<Home> {
   void _initPage() async {
     _prefs = await SharedPreferences.getInstance();
     setState(() {
-      _userType = _prefs?.getString('userType');
+      _userType = _prefs?.getString('usertype');
     });
   }
 

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:electrict_bill/bill/bill_request.dart';
 import 'package:electrict_bill/commission/commission_page.dart';
 import 'package:electrict_bill/passbook/passbook_page.dart';
@@ -5,7 +7,10 @@ import 'package:electrict_bill/rate/rate_page.dart';
 import 'package:electrict_bill/report/report_page.dart';
 import 'package:electrict_bill/setting/setting_page.dart';
 import 'package:electrict_bill/user/user_list.dart';
+import 'package:electrict_bill/utils/user_secure_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:electrict_bill/utils/constants.dart' as constants;
+import 'package:http/http.dart' as http;
 
 class Admin extends StatefulWidget {
   const Admin({Key? key}) : super(key: key);
@@ -15,6 +20,53 @@ class Admin extends StatefulWidget {
 }
 
 class _AdminState extends State<Admin> {
+  bool _gotServerInitialData = false;
+  int _partnerCount = 0;
+  int _superCount = 0;
+  int _distributorCount = 0;
+  int _retailerCount = 0;
+  double _partnerBalance = 0;
+  double _superBalance = 0;
+  double _distributorBalance = 0;
+  double _retailerBalance = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getInitData();
+  }
+
+  Future<void> getInitData() async {
+    var token = await UserSecureStorage.getToken();
+    var url = '${constants.apiUrl}dashboard';
+    final response = await http.get(Uri.parse(url), headers: {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    });
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      setState(() {
+        _partnerCount = data['partner_count'];
+        _superCount = data['super_count'];
+        _distributorCount = data['distributor_count'];
+        _retailerCount = data['retailer_count'];
+        _partnerBalance = data['partner_balance'];
+        _superBalance = data['super_balance'];
+        _distributorBalance = data['distributor_balance'];
+        _retailerBalance = data['retailer_balance'];
+        _superCount = data['superCount'];
+        _distributorCount = data['distributorCount'];
+        _gotServerInitialData = true;
+      });
+    } else {
+      setState(() {
+        _gotServerInitialData = false;
+      });
+      print('Error getting data');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -31,19 +83,25 @@ class _AdminState extends State<Admin> {
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _userStat(10, "Super \nDistributor", 5004),
+                    _userStat(_partnerCount, "Partner", 500004),
                     const VerticalDivider(
                         thickness: 3,
                         indent: 10,
                         endIndent: 10,
                         color: Colors.grey),
-                    _userStat(20, "Distributor", 5004),
+                    _userStat(_superCount, "Super \nDistributor", 5004),
                     const VerticalDivider(
                         thickness: 3,
                         indent: 10,
                         endIndent: 10,
                         color: Colors.grey),
-                    _userStat(70, "Retailer", 55004),
+                    _userStat(_distributorCount, "Distributor", 5004),
+                    const VerticalDivider(
+                        thickness: 3,
+                        indent: 10,
+                        endIndent: 10,
+                        color: Colors.grey),
+                    _userStat(_retailerCount, "Retailer", 55004),
                   ]),
             ),
           ),
@@ -195,11 +253,11 @@ Widget _userStat(int number, String usertype, int balance) {
         children: [
           const Text(
             '₹',
-            style: TextStyle(fontSize: 12),
+            style: TextStyle(fontSize: 10),
           ),
           Text(
             '$balance',
-            style: const TextStyle(fontSize: 20),
+            style: const TextStyle(fontSize: 14),
           ),
         ],
       ),
