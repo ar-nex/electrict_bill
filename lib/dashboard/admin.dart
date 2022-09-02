@@ -32,7 +32,8 @@ class _AdminState extends State<Admin> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    // TODO: implement initState0+
+    
     super.initState();
     getInitData();
   }
@@ -51,12 +52,12 @@ class _AdminState extends State<Admin> {
         _superCount = data['super_count'];
         _distributorCount = data['distributor_count'];
         _retailerCount = data['retailer_count'];
-        _partnerBalance = data['partner_balance'];
-        _superBalance = data['super_balance'];
-        _distributorBalance = data['distributor_balance'];
-        _retailerBalance = data['retailer_balance'];
-        _superCount = data['superCount'];
-        _distributorCount = data['distributorCount'];
+        _partnerBalance = data['partner_balance'].toDouble();
+        _superBalance = data['super_balance'].toDouble();
+        _distributorBalance = data['distributor_balance'].toDouble();
+        _retailerBalance = data['retailer_balance'].toDouble();
+        _superCount = data['super_count'];
+        _distributorCount = data['distributor_count'];
         _gotServerInitialData = true;
       });
     } else {
@@ -83,25 +84,27 @@ class _AdminState extends State<Admin> {
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _userStat(_partnerCount, "Partner", 500004),
+                    _userStat(_partnerCount, "Partner", _partnerBalance),
                     const VerticalDivider(
                         thickness: 3,
                         indent: 10,
                         endIndent: 10,
                         color: Colors.grey),
-                    _userStat(_superCount, "Super \nDistributor", 5004),
+                    _userStat(
+                        _superCount, "Super \nDistributor", _superBalance),
                     const VerticalDivider(
                         thickness: 3,
                         indent: 10,
                         endIndent: 10,
                         color: Colors.grey),
-                    _userStat(_distributorCount, "Distributor", 5004),
+                    _userStat(
+                        _distributorCount, "Distributor", _distributorBalance),
                     const VerticalDivider(
                         thickness: 3,
                         indent: 10,
                         endIndent: 10,
                         color: Colors.grey),
-                    _userStat(_retailerCount, "Retailer", 55004),
+                    _userStat(_retailerCount, "Retailer", _retailerBalance),
                   ]),
             ),
           ),
@@ -235,7 +238,7 @@ GestureDetector _dashIcon(context, IconData icon, String title) {
   );
 }
 
-Widget _userStat(int number, String usertype, int balance) {
+Widget _userStat(int number, String usertype, double balance) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
